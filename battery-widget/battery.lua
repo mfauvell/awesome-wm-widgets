@@ -17,8 +17,9 @@ local wibox = require("wibox")
 -- Battery 0: Discharging, 75%, 01:51:38 remaining
 -- Battery 0: Charging, 53%, 00:57:43 until charged
 
-local PATH_TO_ICONS = "/usr/share/icons/Arc/status/symbolic/"
+--local PATH_TO_ICONS = "/usr/share/icons/Arc/status/symbolic/"
 local HOME = os.getenv("HOME")
+local PATH_TO_ICONS = HOME.."/.config/awesome/icons/battery/"
 
 local battery_widget = wibox.widget {
     {
@@ -56,7 +57,7 @@ end
 
 local function show_battery_warning()
     naughty.notify{
-        icon = HOME .. "/.config/awesome/nichosi.png",
+        icon = HOME .. "/.config/awesome/icons/battery/bat11.png",
         icon_size=100,
         text = "Huston, we have a problem",
         title = "Battery is dying",
@@ -105,27 +106,37 @@ watch("acpi -i", 10,
         end
         charge = charge / capacity
 
-        if (charge >= 0 and charge < 15) then
-            batteryType = "battery-empty%s-symbolic"
+        if (charge > 0 and charge <= 5) then
+            batteryType = "bat11%s"
             if status ~= 'Charging' and os.difftime(os.time(), last_battery_check) > 300 then
                 -- if 5 minutes have elapsed since the last warning
                 last_battery_check = time()
 
                 show_battery_warning()
             end
-        elseif (charge >= 15 and charge < 40) then batteryType = "battery-caution%s-symbolic"
-        elseif (charge >= 40 and charge < 60) then batteryType = "battery-low%s-symbolic"
-        elseif (charge >= 60 and charge < 80) then batteryType = "battery-good%s-symbolic"
-        elseif (charge >= 80 and charge <= 100) then batteryType = "battery-full%s-symbolic"
+        elseif (charge > 5 and charge <= 10) then batteryType = "bat10%s"
+        elseif (charge > 10 and charge <= 20) then batteryType = "bat9%s"
+        elseif (charge > 20 and charge <= 30) then batteryType = "bat8%s"
+        elseif (charge > 30 and charge <= 40) then batteryType = "bat7%s"
+        elseif (charge > 40 and charge <= 50) then batteryType = "bat6%s"
+        elseif (charge > 50 and charge <= 60) then batteryType = "bat5%s"
+        elseif (charge > 60 and charge <= 70) then batteryType = "bat4%s"
+        elseif (charge > 70 and charge <= 80) then batteryType = "bat3%s"
+        elseif (charge > 80 and charge <= 90) then batteryType = "bat2%s"
+        elseif (charge > 90 and charge <= 100) then batteryType = "bat1%s"
         end
 
         if status == 'Charging' then
-            batteryType = string.format(batteryType, '-charging')
-        else
+            batteryType = string.format(batteryType, '-char')
+        elseif status == 'Discharging' then
             batteryType = string.format(batteryType, '')
+        elseif status == 'Full' then
+            batteryType = 'ac'
+        else
+            batteryType = 'ac'
         end
 
-        widget.icon:set_image(PATH_TO_ICONS .. batteryType .. ".svg")
+        widget.icon:set_image(PATH_TO_ICONS .. batteryType .. ".png")
 
         -- Update popup text
         -- battery_popup.text = string.gsub(stdout, "\n$", "")
